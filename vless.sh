@@ -36,13 +36,13 @@ echo "脚本不支持当前的系统，请选择使用Ubuntu,Debian,Centos系统
 fi
 op=$(cat /etc/redhat-release 2>/dev/null || cat /etc/os-release 2>/dev/null | grep -i pretty_name | cut -d \" -f2)
 if [[ $(echo "$op" | grep -i -E "arch") ]]; then
-echo "脚本不支持当前的 $op 系统，请选择使用Ubuntu,Debian,Centos系统。" && exit
+echo "脚本不支持当前的 $op sistem, please choose to use Ubuntu, Debian, Centos system." && exit
 fi
 [[ -z $(systemd-detect-virt 2>/dev/null) ]] && vi=$(virt-what 2>/dev/null) || vi=$(systemd-detect-virt 2>/dev/null)
 case $(uname -m) in
 aarch64) cpu=arm64;;
 x86_64) cpu=amd64;;
-*) echo "目前脚本不支持$(uname -m)架构" && exit;;
+*) echo "Currently the script does not support $(uname -m) architecture" && exit;;
 esac
 hostname=$(hostname)
 del(){
@@ -62,31 +62,31 @@ chmod +x /usr/bin/agsb
 }
 if [[ "$1" == "del" ]]; then
 del && sleep 2
-echo "卸载完成"
+echo "Uninstall completed"
 exit
 elif [[ "$1" == "up" ]]; then
 up && sleep 2
-echo "升级完成"
+echo "Upgrade completed"
 exit
 fi
 if [[ -n $(ps -e | grep sing-box) ]] && [[ -n $(ps -e | grep cloudflared) ]] && [[ -e /etc/s-box-ag/list.txt ]]; then
-echo "ArgoSB脚本已在运行中"
+echo "ArgoSB script is already running"
 argoname=$(cat /etc/s-box-ag/sbargoym.log 2>/dev/null)
 if [ -z $argoname ]; then
 argodomain=$(cat /etc/s-box-ag/argo.log 2>/dev/null | grep -a trycloudflare.com | awk 'NR==2{print}' | awk -F// '{print $2}' | awk '{print $1}')
 if [ -z $argodomain ]; then
-echo "当前argo临时域名未生成，请先将脚本卸载(agsb del)，再重新安装ArgoSB脚本"
+echo "Current Argo temporary domain not generated, please uninstall the script first (agsb del), then reinstall ArgoSB script"
 else
-echo "当前argo最新临时域名：$argodomain"
+echo "Current Argo latest temporary domain: $argodomain"
 fi
 else
-echo "当前argo固定域名：$argoname"
-echo "当前argo固定域名token：$(cat /etc/s-box-ag/sbargotoken.log 2>/dev/null)"
+echo "Current Argo fixed domain: $argoname"
+echo "Current Argo fixed domain token: $(cat /etc/s-box-ag/sbargotoken.log 2>/dev/null)"
 fi
 cat /etc/s-box-ag/list.txt
 exit
 elif [[ -z $(ps -e | grep sing-box) ]] && [[ -z $(ps -e | grep cloudflared) ]]; then
-echo "检查依赖安装……请稍等"
+echo "Checking dependencies installation... Please wait"
 if command -v apt &> /dev/null; then
 apt update -y &> /dev/null
 apt install curl wget tar gzip cron jq procps coreutils util-linux -y &> /dev/null
@@ -96,12 +96,12 @@ elif command -v apk &> /dev/null; then
 apk update -y &> /dev/null
 apk add wget curl tar jq tzdata openssl git grep procps coreutils util-linux dcron &> /dev/null
 fi
-echo "VPS系统：$op"
-echo "CPU架构：$cpu"
-echo "ArgoSB脚本未安装，开始安装…………" && sleep 3
+echo "VPS System: $op"
+echo "CPU Architecture: $cpu"
+echo "ArgoSB script not installed, starting installation..." && sleep 3
 echo
 else
-echo "ArgoSB脚本未启动，可能与其他sing-box或者argo脚本冲突了，请先将脚本卸载(agsb del)，再重新安装ArgoSB脚本"
+echo "ArgoSB script not started, possibly conflicting with other sing-box or argo scripts, please uninstall the script first (agsb del), then reinstall ArgoSB script"
 exit
 fi
 warpcheck(){
@@ -128,14 +128,14 @@ fi
 mkdir -p /etc/s-box-ag
 sbcore=$(curl -Ls https://data.jsdelivr.com/v1/package/gh/SagerNet/sing-box | grep -Eo '"[0-9.]+",' | sed -n 1p | tr -d '",')
 sbname="sing-box-$sbcore-linux-$cpu"
-echo "下载sing-box最新正式版内核：$sbcore"
+echo "Downloading sing-box latest official kernel: $sbcore"
 curl -L -o /etc/s-box-ag/sing-box.tar.gz -# --retry 2 https://github.com/SagerNet/sing-box/releases/download/v$sbcore/$sbname.tar.gz
 if [[ -f '/etc/s-box-ag/sing-box.tar.gz' ]]; then
 tar xzf /etc/s-box-ag/sing-box.tar.gz -C /etc/s-box-ag
 mv /etc/s-box-ag/$sbname/sing-box /etc/s-box-ag
 rm -rf /etc/s-box-ag/{sing-box.tar.gz,$sbname}
 else
-echo "下载失败，请检测网络" && exit
+echo "Download failed, please check network" && exit
 fi
 
 if [ -z $port_vl_ws ]; then # Changed variable name
@@ -145,9 +145,9 @@ if [ -z $UUID ]; then
 UUID=$(/etc/s-box-ag/sing-box generate uuid)
 fi
 echo
-echo "当前VLESS主协议端口：$port_vl_ws" # Updated text
+echo "Current VLESS main protocol port: $port_vl_ws" # Updated text
 echo
-echo "当前uuid密码：$UUID"
+echo "Current uuid password: $UUID"
 echo
 sleep 3
 
@@ -198,20 +198,21 @@ echo '@reboot /bin/bash -c "nohup setsid /etc/s-box-ag/sing-box run -c /etc/s-bo
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 argocore=$(curl -Ls https://data.jsdelivr.com/v1/package/gh/cloudflare/cloudflared | grep -Eo '"[0-9.]+",' | sed -n 1p | tr -d '",')
-echo "下载cloudflared-argo最新正式版内核：$argocore"
+echo "Downloading cloudflared-argo latest official kernel: $argocore"
 curl -L -o /etc/s-box-ag/cloudflared -# --retry 2 https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$cpu
 chmod +x /etc/s-box-ag/cloudflared
 if [[ -n "${ARGO_DOMAIN}" && -n "${ARGO_AUTH}" ]]; then
-name='固定'
+name='Fixed'
 nohup setsid /etc/s-box-ag/cloudflared tunnel --no-autoupdate --edge-ip-version auto --protocol http2 run --token ${ARGO_AUTH} >/dev/null 2>&1 & echo "$!" > /etc/s-box-ag/sbargopid.log
 echo ${ARGO_DOMAIN} > /etc/s-box-ag/sbargoym.log
 echo ${ARGO_AUTH} > /etc/s-box-ag/sbargotoken.log
 else
-name='临时'
-nohup setsid /etc/s-box-ag/cloudflared tunnel --url http://localhost:$(sed 's://.*::g' /etc/s-box-ag/sb.json | jq -r '.inbounds[0].listen_port') --edge-ip-version auto --no-autoupdate --protocol http2 > /etc/s-box-ag/argo.log 2>&1 &
+name='Temporary'
+# --- FIX: Removed 'sed' pipe that was corrupting JSON output for jq ---
+nohup setsid /etc/s-box-ag/cloudflared tunnel --url http://localhost:$(jq -r '.inbounds[0].listen_port' /etc/s-box-ag/sb.json) --edge-ip-version auto --no-autoupdate --protocol http2 > /etc/s-box-ag/argo.log 2>&1 &
 echo "$!" > /etc/s-box-ag/sbargopid.log
 fi
-echo "申请Argo$name隧道中……请稍等"
+echo "Applying Argo$name tunnel... Please wait"
 sleep 8
 if [[ -n "${ARGO_DOMAIN}" && -n "${ARGO_AUTH}" ]]; then
 argodomain=$(cat /etc/s-box-ag/sbargoym.log 2>/dev/null)
@@ -219,16 +220,17 @@ else
 argodomain=$(cat /etc/s-box-ag/argo.log 2>/dev/null | grep -a trycloudflare.com | awk 'NR==2{print}' | awk -F// '{print $2}' | awk '{print $1}')
 fi
 if [[ -n $argodomain ]]; then
-echo "Argo$name隧道申请成功，域名为：$argodomain"
+echo "Argo$name tunnel applied successfully, domain is: $argodomain"
 else
-echo "Argo$name隧道申请失败，请稍后再试" && del && exit
+echo "Argo$name tunnel application failed, please try again later" && del && exit
 fi
 crontab -l > /tmp/crontab.tmp
 sed -i '/sbargopid/d' /tmp/crontab.tmp
 if [[ -n "${ARGO_DOMAIN}" && -n "${ARGO_AUTH}" ]]; then
 echo '@reboot /bin/bash -c "nohup setsid /etc/s-box-ag/cloudflared tunnel --no-autoupdate --edge-ip-version auto --protocol http2 run --token $(cat /etc/s-box-ag/sbargotoken.log 2>/dev/null) >/dev/null 2>&1 & pid=\$! && echo \$pid > /etc/s-box-ag/sbargopid.log"' >> /tmp/crontab.tmp
 else
-echo '@reboot /bin/bash -c "nohup setsid /etc/s-box-ag/cloudflared tunnel --url http://localhost:$(sed 's://.*::g' /etc/s-box-ag/sb.json | jq -r '.inbounds[0].listen_port') --edge-ip-version auto --no-autoupdate --protocol http2 > /etc/s-box-ag/argo.log 2>&1 & pid=\$! && echo \$pid > /etc/s-box-ag/sbargopid.log"' >> /tmp/crontab.tmp
+# --- FIX: Removed 'sed' pipe that was corrupting JSON output for jq in cronjob ---
+echo '@reboot /bin/bash -c "nohup setsid /etc/s-box-ag/cloudflared tunnel --url http://localhost:$(jq -r '.inbounds[0].listen_port' /etc/s-box-ag/sb.json) --edge-ip-version auto --no-autoupdate --protocol http2 > /etc/s-box-ag/argo.log 2>&1 & pid=\$! && echo \$pid > /etc/s-box-ag/sbargopid.log"' >> /tmp/crontab.tmp
 fi
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
@@ -267,36 +269,36 @@ line6=$(sed -n '6p' /etc/s-box-ag/jh.txt)
 line7=$(sed -n '7p' /etc/s-box-ag/jh.txt)
 line13=$(sed -n '13p' /etc/s-box-ag/jh.txt)
 vlport=${port_vl_ws} # Changed variable name
-echo "ArgoSB脚本安装完毕" && sleep 2
+echo "ArgoSB script installation completed" && sleep 2
 cat > /etc/s-box-ag/list.txt <<EOF
 ---------------------------------------------------------
 ---------------------------------------------------------
-VLESS主协议端口(Argo固定隧道端口)：$vlport # Updated text
+VLESS main protocol port (Argo fixed tunnel port): $vlport # Updated text
 ---------------------------------------------------------
-单节点配置输出：
-1、443端口的VLESS-ws-tls-argo节点，默认优选IPV4：104.16.0.0 # Updated text
+Single node configuration output:
+1、443 port VLESS-ws-tls-argo node, default preferred IPV4: 104.16.0.0 # Updated text
 $line1
 
-2、2096端口的VLESS-ws-tls-argo节点，默认优选IPV6：[2606:4700::]（本地网络支持IPV6才可用） # Updated text
+2、2096 port VLESS-ws-tls-argo node, default preferred IPV6: [2606:4700::] (available only if local network supports IPV6) # Updated text
 $line6
 
-3、80端口的VLESS-ws-argo节点，默认优选IPV4：104.21.0.0 # Updated text
+3、80 port VLESS-ws-argo node, default preferred IPV4: 104.21.0.0 # Updated text
 $line7
 
-4、2095端口的VLESS-ws-argo节点，默认优选IPV6：[2400:cb00:2049::]（本地网络支持IPV6才可用） # Updated text
+4、2095 port VLESS-ws-argo node, default preferred IPV6: [2400:cb00:2049::] (available only if local network supports IPV6) # Updated text
 $line13
 
 ---------------------------------------------------------
-聚合节点配置输出：
-5、Argo节点13个端口及不死IP全覆盖：7个关tls 80系端口节点、6个开tls 443系端口节点
+Aggregated node configuration output:
+5、Argo node 13 ports and immortal IP full coverage: 7 tls-off 80-series port nodes, 6 tls-on 443-series port nodes
 
 $baseurl
 
 ---------------------------------------------------------
-相关快捷方式如下：
-显示域名及节点信息：agsb
-升级脚本：agsb up
-卸载脚本：agsb del
+Related shortcuts are as follows:
+Display domain and node information: agsb
+Upgrade script: agsb up
+Uninstall script: agsb del
 ---------------------------------------------------------
 EOF
 cat /etc/s-box-ag/list.txt
@@ -318,22 +320,22 @@ rm -rf nixag
 }
 if [[ "$1" == "del" ]]; then
 del && sleep 2
-echo "卸载完成"
+echo "Uninstall completed"
 exit
 fi
 if [[ -n $(ps -e | grep sing-box) ]] && [[ -n $(ps -e | grep cloudflared) ]] && [[ -e nixag/list.txt ]]; then
-echo "ArgoSB脚本已在运行中"
+echo "ArgoSB script is already running"
 cat nixag/list.txt
 exit
 else
-echo "VPS系统：$op"
-echo "CPU架构：$cpu"
-echo "ArgoSB脚本未安装，开始安装…………" && sleep 3
+echo "VPS System: $op"
+echo "CPU Architecture: $cpu"
+echo "ArgoSB script not installed, starting installation..." && sleep 3
 fi
 if [ ! -e nixag/sing-box ]; then
 sbcore=$(curl -Ls https://data.jsdelivr.com/v1/package/gh/SagerNet/sing-box | grep -Eo '"[0-9.]+",' | sed -n 1p | tr -d '",')
 sbname="sing-box-$sbcore-linux-$cpu"
-echo "下载sing-box最新正式版内核：$sbcore"
+echo "Downloading sing-box latest official kernel: $sbcore"
 curl -L -o nixag/sing-box.tar.gz -# --retry 2 https://github.com/SagerNet/sing-box/releases/download/v$sbcore/$sbname.tar.gz
 if [[ -f 'nixag/sing-box.tar.gz' ]]; then
 tar xzf nixag/sing-box.tar.gz -C nixag
@@ -341,7 +343,7 @@ mv nixag/$sbname/sing-box nixag
 rm -rf nixag/{sing-box.tar.gz,$sbname}
 chmod +x nixag/sing-box
 else
-echo "下载失败，请检测网络" && exit
+echo "Download failed, please check network" && exit
 fi
 fi
 if [ -z $port_vl_ws ]; then # Changed variable name
@@ -351,9 +353,9 @@ if [ -z $UUID ]; then
 UUID=$(./nixag/sing-box generate uuid)
 fi
 echo
-echo "当前VLESS主协议端口：$port_vl_ws" # Updated text
+echo "Current VLESS main protocol port: $port_vl_ws" # Updated text
 echo
-echo "当前uuid密码：$UUID"
+echo "Current uuid password: $UUID"
 echo
 if [[ "$hostname" == *firebase* || "$hostname" == *idx* ]]; then
 [ -f ~/.bashrc ] || touch ~/.bashrc
@@ -406,32 +408,32 @@ EOF
 nohup ./nixag/sing-box run -c nixag/sb.json >/dev/null 2>&1 & echo "$!" > nixag/sbpid.log
 if [ ! -e nixag/cloudflared ]; then
 argocore=$(curl -Ls https://data.jsdelivr.com/v1/package/gh/cloudflare/cloudflared | grep -Eo '"[0-9.]+",' | sed -n 1p | tr -d '",')
-echo "下载cloudflared-argo最新正式版内核：$argocore"
+echo "Downloading cloudflared-argo latest official kernel: $argocore"
 curl -L -o nixag/cloudflared -# --retry 2 https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$cpu
 chmod +x nixag/cloudflared
 fi
 if [[ -n "${ARGO_DOMAIN}" && -n "${ARGO_AUTH}" ]]; then
-name='固定'
+name='Fixed'
 nohup ./nixag/cloudflared tunnel --no-autoupdate --edge-ip-version auto --protocol http2 run --token ${ARGO_AUTH} >/dev/null 2>&1 & echo "$!" > nixag/sbargopid.log
 echo ${ARGO_DOMAIN} > nixag/sbargoym.log
 echo ${ARGO_AUTH} > nixag/sbargotoken.log
 else
-name='临时'
+name='Temporary'
 nohup ./nixag/cloudflared tunnel --url http://localhost:${port_vl_ws} --edge-ip-version auto --no-autoupdate --protocol http2 > nixag/argo.log 2>&1 &
 echo "$!" > nixag/sbargopid.log
 fi
-echo "申请Argo$name隧道中……请稍等"
+echo "Applying Argo$name tunnel... Please wait"
 sleep 8
 if [[ -n "${ARGO_DOMAIN}" && -n "${ARGO_AUTH}" ]]; then
 argodomain=$(cat nixag/sbargoym.log 2>/dev/null)
-nametn="当前Argo固定隧道token：$(cat nixag/sbargotoken.log 2>/dev/null)"
+nametn="Current Argo fixed tunnel token: $(cat nixag/sbargotoken.log 2>/dev/null)"
 else
 argodomain=$(cat nixag/argo.log 2>/dev/null | grep -a trycloudflare.com | awk 'NR==2{print}' | awk -F// '{print $2}' | awk '{print $1}')
 fi
 if [[ -n $argodomain ]]; then
-echo "Argo$name隧道申请成功，域名为：$argodomain"
+echo "Argo$name tunnel applied successfully, domain is: $argodomain"
 else
-echo "Argo$name隧道申请失败，请稍后再试" && del && exit
+echo "Argo$name tunnel application failed, please try again later" && del && exit
 fi
 # VLESS link generation for nix
 vlatls_link1="vless://$(echo "${UUID}@104.16.0.0:443?encryption=none&security=tls&type=ws&host=${argodomain}&path=/${UUID}-vless&sni=${argodomain}&fp=&ed=2048#vless-ws-tls-argo-$hostname-443" | base64 -w0)"
@@ -464,32 +466,32 @@ line1=$(sed -n '1p' nixag/jh.txt)
 line6=$(sed -n '6p' nixag/jh.txt)
 line7=$(sed -n '7p' nixag/jh.txt)
 line13=$(sed -n '13p' nixag/jh.txt)
-echo "ArgoSB脚本安装完毕" && sleep 2
+echo "ArgoSB script installation completed" && sleep 2
 echo
 echo
 cat > nixag/list.txt <<EOF
 ---------------------------------------------------------
 ---------------------------------------------------------
 ---------------------------------------------------------
-以下节点信息内容，请查看nixag/list.txt文件或者运行cat nixag/jh.txt进行复制
+The following node information content, please check the nixag/list.txt file or run cat nixag/jh.txt to copy
 ---------------------------------------------------------
-VLESS主协议端口(Argo固定隧道端口)：$port_vl_ws # Updated text
-当前Argo$name域名：$argodomain
+VLESS main protocol port (Argo fixed tunnel port): $port_vl_ws # Updated text
+Current Argo$name domain: $argodomain
 $nametn
 ---------------------------------------------------------
-1、443端口的VLESS-ws-tls-argo节点，默认优选IPV4：104.16.0.0 # Updated text
+1、443 port VLESS-ws-tls-argo node, default preferred IPV4: 104.16.0.0 # Updated text
 $line1
 
-2、2096端口的VLESS-ws-tls-argo节点，默认优选IPV6：[2606:4700::]（本地网络支持IPV6才可用） # Updated text
+2、2096 port VLESS-ws-tls-argo node, default preferred IPV6: [2606:4700::] (available only if local network supports IPV6) # Updated text
 $line6
 
-3、80端口的VLESS-ws-argo节点，默认优选IPV4：104.21.0.0 # Updated text
+3、80 port VLESS-ws-argo node, default preferred IPV4: 104.21.0.0 # Updated text
 $line7
 
-4、2095端口的VLESS-ws-argo节点，默认优选IPV6：[2400:cb00:2049::]（本地网络支持IPV6才可用） # Updated text
+4、2095 port VLESS-ws-argo node, default preferred IPV6: [2400:cb00:2049::] (available only if local network supports IPV6) # Updated text
 $line13
 
-5、Argo节点13个端口聚合节点信息，请查看nixag/jh.txt文件或者运行cat nixag/jh.txt进行复制
+5、Argo node 13 ports aggregation node information, please check the nixag/jh.txt file or run cat nixag/jh.txt to copy
 ---------------------------------------------------------
 ---------------------------------------------------------
 ---------------------------------------------------------
