@@ -10,7 +10,7 @@ echo "${sys}ArgoSB真一键无交互脚本"
 echo "当前版本：25.5.10 测试beta7版"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 export UUID="9d1d85e1-405b-46b1-9e79-945fac17d690"
-export port_vm_ws=65312
+export port_vm_ws=${vmpt:-''} 
 export ARGO_DOMAIN=${agn:-''}   
 export ARGO_AUTH=${agk:-''} 
 if [ -z "$nix" ]; then 
